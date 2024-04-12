@@ -6,6 +6,11 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [link, setLink] = useState("https://wa.me/");
   const [number, setNumber] = useState("");
+  const [copyText, setCopyText] = useState("Copy");
+
+  useEffect(() => {
+    checkNumber(number);
+  }, [number]);
 
   const checkNumber = (number: any) => {
     const fixedNumber = number.replace(/\D/g, "");
@@ -17,17 +22,22 @@ export default function Home() {
     setLink(finalLink);
   };
 
-  useEffect(() => {
-    checkNumber(number);
-  }, [number]);
+  const pasteFromClipboard = async () => {
+    const copiedNumber = await navigator.clipboard.readText();
+    setNumber(copiedNumber);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(link);
+  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-evenly bg-stone-700">
       <div className="text-white font-bold text-2xl w-[60%] lg:w-full text-center">
         Welcome to Fast Link for WhatsApp
       </div>
-      <div className="flex flex-col gap-5 bg-slate-100 rounded-lg py-20 items-center w-[80%] md:w-[60%]">
-        <div>Type the Number:</div>
+      <div className="flex flex-col gap-5 bg-slate-100 rounded-lg py-10 items-center w-[80%] md:w-[60%]">
+        <div>Type or Paste the Number:</div>
         <div className="flex flex-col gap-2 w-full items-center">
           <input
             className="p-3 rounded-lg w-[90%] md:w-[60%] text-center"
@@ -39,6 +49,7 @@ export default function Home() {
             <button
               type="button"
               className="p-4 w-full bg-red-400 rounded-lg hover:bg-white hover:text-red-400"
+              onClick={() => pasteFromClipboard()}
             >
               Paste
             </button>
@@ -52,7 +63,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-5 bg-slate-100 rounded-lg py-20 items-center w-[80%] md:w-[60%]">
+      <div className="flex flex-col gap-5 bg-slate-100 rounded-lg py-10 items-center w-[80%] md:w-[60%]">
         <div>Link:</div>
         <div className="flex  flex-col gap-2 w-full items-center">
           <div className=" bg-white py-4 px-2 rounded-lg w-[90%] md:w-[60%] text-center">
@@ -64,8 +75,15 @@ export default function Home() {
             <button
               type="button"
               className="p-4 w-full bg-green-400 rounded-lg hover:bg-white hover:text-green-400"
+              onClick={() => {
+                copyToClipboard();
+                setCopyText("Copied");
+                setTimeout(() => {
+                  setCopyText("Copy");
+                }, 2000);
+              }}
             >
-              Copy
+              {copyText}
             </button>
             <a href={link} target="_blank" className="w-full">
               <button
